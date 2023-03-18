@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 class  Face:
     def __init__(self):
+        pass
         # self.recognizer = cv2.face.LBPHFaceRecognizer_create()
         # self.recognizer.read('Face/face.yml')
         # self.detector = cv2.CascadeClassifier("Face/haarcascade_frontalface_default.xml")
