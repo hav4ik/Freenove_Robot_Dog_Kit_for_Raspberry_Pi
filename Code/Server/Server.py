@@ -92,6 +92,7 @@ class Server:
             pass
         self.server_socket.close()
         print ("socket video connected ... ")
+        """
         camera = Picamera2()
         camera.configure(camera.create_video_configuration(main={"size": (400, 300)}))
         output = StreamingOutput()
@@ -112,6 +113,35 @@ class Server:
                 camera.close()
                 print ("End transmit ... " )
                 break
+        """
+        try:
+            with picamera.PiCamera() as camera:
+                camera.resolution = (400,300)       # pi camera resolution
+                camera.framerate = 15               # 15 frames/sec
+                camera.saturation = 80              # Set image video saturation
+                camera.brightness = 50              # Set the brightness of the image (50 indicates the state of white balance)
+                start = time.time()
+                stream = io.BytesIO()
+                # stream = StreamingOutput()
+                # send jpeg format video stream
+                print ("Start transmit ... ")
+                for foo in camera.capture_continuous(stream, 'jpeg', use_video_port = True):
+                    try:
+                        self.connection.flush()
+                        stream.seek(0)
+                        b = stream.read()
+                        lengthBin = struct.pack('L', len(b))
+                        self.connection.write(lengthBin)
+                        self.connection.write(b)
+                        stream.seek(0)
+                        stream.truncate()
+                    except BaseException as e:
+                        #print (e)
+                        print ("End transmit ... " )
+                        break
+        except BaseException as e:
+            print(e)
+            # print ("Camera unintall")
 
     def measuring_voltage(self,connect):
         try:
